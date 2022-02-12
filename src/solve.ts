@@ -1,9 +1,9 @@
 import { buildTrie, readDictionary } from './utils'
 import { getWords } from './wordhuntle'
 
-export const solve = ({ board: boardString, cutOff }: { board: string; cutOff: number }) => {
+export const solve = ({ board: boardString, cutOff, dict }: { board: string; cutOff: number; dict: string }) => {
   console.log('Loading dictionary...')
-  const dictionary = readDictionary('./dictionaries/mieliestronk.txt')
+  const dictionary = readDictionary(dict)
   const dictionaryTrie = buildTrie(dictionary)
   console.log('Dictionary loaded.')
 

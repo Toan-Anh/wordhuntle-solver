@@ -15,8 +15,14 @@ yargs
           demandOption: true,
           requiresArg: true,
         })
+        .option('dict', {
+          describe: 'Path to the dictionary',
+          type: 'string',
+          demandOption: true,
+          requiresArg: true,
+        })
         .option('cutOff', {
-          describe: 'The word length cut off point. Words longer than this will not be included',
+          describe: 'The word length cut off point. Words longer than this will not be included.',
           default: 8,
           type: 'number',
           requiresArg: true,
