@@ -1,5 +1,5 @@
 import { compose, filter, sortBy, uniqBy } from 'ramda'
-import { checkWord, Node, Result } from './utils'
+import { Node, Result } from './utils'
 
 const BOARD_SIZE = 4
 
@@ -50,22 +50,22 @@ export const getWords =
     const results: Result[] = []
 
     const getWordsRecursive = ({
+      curTrieNode,
       curTileIdx,
-      curString,
       curSequence,
       disabledChars,
     }: {
+      curTrieNode: Node | undefined
       curTileIdx: number
-      curString: string
       curSequence: number[]
       disabledChars: Record<number, boolean>
     }) => {
-      if (checkWord(dictionary)(curString)) {
-        results.push({ word: curString, sequence: curSequence })
+      if (!curTrieNode || curSequence.length > cutOff) {
+        return
       }
 
-      if (curString.length > cutOff) {
-        return
+      if (curTrieNode?.isWord) {
+        results.push({ word: curSequence.map(idx => board[idx]).join(''), sequence: curSequence })
       }
 
       const nextIndices = getAdjacentTiles(curTileIdx).filter(index => !disabledChars[index])
@@ -75,9 +75,11 @@ export const getWords =
       }
 
       nextIndices.forEach(index => {
+        const char = board[index]
+
         getWordsRecursive({
+          curTrieNode: curTrieNode.next[char],
           curTileIdx: index,
-          curString: curString + board[index],
           curSequence: [...curSequence, index],
           disabledChars: { ...disabledChars, [index]: true },
         })
@@ -86,8 +88,8 @@ export const getWords =
 
     board.forEach((char, index) => {
       getWordsRecursive({
+        curTrieNode: dictionary.next[char],
         curTileIdx: index,
-        curString: char,
         curSequence: [index],
         disabledChars: { [index]: true },
       })
