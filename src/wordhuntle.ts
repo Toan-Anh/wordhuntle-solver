@@ -42,7 +42,7 @@ export const getAdjacentTiles = (currentTileIdx: number): number[] => {
 
 export const getWords =
   (dictionary: Node) =>
-  (board: string[], cutOff = 9): Result[] => {
+  (board: string[], cutOff: number): Result[] => {
     if (!validateInput(board)) {
       throw Error('Invalid input for board!')
     }
