@@ -1,0 +1,16 @@
+{
+  "name": "wordhuntle-solver",
+  "version": "0.0.0",
+  "description": "Solver for Wordhuntle.com",
+  "main": "./src/index.ts",
+  "author": "Toan-Anh Nguyen <toananhnguyen.is@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.17",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.5.5"
+  }
+}
