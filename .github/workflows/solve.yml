@@ -1,0 +1,50 @@
+# This is a basic workflow that is manually triggered
+
+name: Solve
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      board:
+        # Friendly description to be shown in the UI
+        description: 'Board'
+        # Input has to be provided for the workflow to run
+        required: true
+      dictionary:
+        # Friendly description to be shown in the UI
+        description: 'Dictionary'
+        # Default value if no value is explicitly provided
+        default: './dictionaries/mieliestronk.txt'
+        # Input has to be provided for the workflow to run
+        required: true
+      cutOff:
+        # Friendly description to be shown in the UI
+        description: 'Cut off'
+        # Default value if no value is explicitly provided
+        default: '8'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "greet"
+  solve:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install packages
+      run: yarn install
+    - name: Solve puzzle
+      run: yarn solve --board ${{ github.event.inputs.board }} --dict ${{ github.event.inputs.dictionary }} --cutOff ${{ github.event.inputs.cutOff }}
