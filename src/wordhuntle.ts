@@ -1,51 +1,56 @@
 import { compose, filter, sortBy, uniqBy } from 'ramda'
 import { Node, Result } from './utils'
 
-const BOARD_SIZE = 4
+const determineBoardSize = (chars: string[]): number => {
+  const boardSize = Math.floor(Math.sqrt(chars.length))
+  console.log(`Input has ${chars.length} characters, closest board size is ${boardSize}`)
+  console.log('Final board considered:')
+  for (let i = 0; i < boardSize; ++i) {
+    console.log(chars.slice(i * boardSize, (i + 1) * boardSize).join(' '))
+  }
 
-export const validateInput = (chars: string[]): boolean => {
-  return chars.length === BOARD_SIZE * BOARD_SIZE
-}
-
-const getTileNW = (currentTileIdx: number): number | null => {
-  return currentTileIdx % BOARD_SIZE === 0 ? null : currentTileIdx - (BOARD_SIZE + 1)
-}
-const getTileN = (currentTileIdx: number): number | null => {
-  return currentTileIdx - BOARD_SIZE
-}
-const getTileNE = (currentTileIdx: number): number | null => {
-  return (currentTileIdx + 1) % BOARD_SIZE === 0 ? null : currentTileIdx - (BOARD_SIZE - 1)
-}
-const getTileW = (currentTileIdx: number): number | null => {
-  return currentTileIdx % BOARD_SIZE === 0 ? null : currentTileIdx - 1
-}
-const getTileE = (currentTileIdx: number): number | null => {
-  return (currentTileIdx + 1) % BOARD_SIZE === 0 ? null : currentTileIdx + 1
-}
-const getTileSW = (currentTileIdx: number): number | null => {
-  return currentTileIdx % BOARD_SIZE === 0 ? null : currentTileIdx + (BOARD_SIZE - 1)
-}
-const getTileS = (currentTileIdx: number): number | null => {
-  return currentTileIdx + BOARD_SIZE
-}
-const getTileSE = (currentTileIdx: number): number | null => {
-  return (currentTileIdx + 1) % BOARD_SIZE === 0 ? null : currentTileIdx + (BOARD_SIZE + 1)
+  return boardSize
 }
 
-export const getAdjacentTiles = (currentTileIdx: number): number[] => {
-  const getters = [getTileNW, getTileN, getTileNE, getTileW, getTileE, getTileSW, getTileS, getTileSE]
+const getTileNW = (boardSize: number, currentTileIdx: number): number | null => {
+  return currentTileIdx % boardSize === 0 ? null : currentTileIdx - (boardSize + 1)
+}
+const getTileN = (boardSize: number, currentTileIdx: number): number | null => {
+  return currentTileIdx - boardSize
+}
+const getTileNE = (boardSize: number, currentTileIdx: number): number | null => {
+  return (currentTileIdx + 1) % boardSize === 0 ? null : currentTileIdx - (boardSize - 1)
+}
+const getTileW = (boardSize: number, currentTileIdx: number): number | null => {
+  return currentTileIdx % boardSize === 0 ? null : currentTileIdx - 1
+}
+const getTileE = (boardSize: number, currentTileIdx: number): number | null => {
+  return (currentTileIdx + 1) % boardSize === 0 ? null : currentTileIdx + 1
+}
+const getTileSW = (boardSize: number, currentTileIdx: number): number | null => {
+  return currentTileIdx % boardSize === 0 ? null : currentTileIdx + (boardSize - 1)
+}
+const getTileS = (boardSize: number, currentTileIdx: number): number | null => {
+  return currentTileIdx + boardSize
+}
+const getTileSE = (boardSize: number, currentTileIdx: number): number | null => {
+  return (currentTileIdx + 1) % boardSize === 0 ? null : currentTileIdx + (boardSize + 1)
+}
+
+const getAdjacentTiles = (boardSize: number, currentTileIdx: number, includeDiagonals: boolean): number[] => {
+  const getters = includeDiagonals
+    ? [getTileNW, getTileN, getTileNE, getTileW, getTileE, getTileSW, getTileS, getTileSE]
+    : [getTileN, getTileW, getTileE, getTileS]
 
   return getters
-    .map(getter => getter(currentTileIdx))
-    .filter((index): index is number => index != null && index >= 0 && index < BOARD_SIZE * BOARD_SIZE)
+    .map(getter => getter(boardSize, currentTileIdx))
+    .filter((index): index is number => index != null && index >= 0 && index < boardSize * boardSize)
 }
 
 export const getWords =
   (dictionary: Node) =>
-  (board: string[], cutOff: number): Result[] => {
-    if (!validateInput(board)) {
-      throw Error('Invalid input for board!')
-    }
+  (board: string[], cutOff: number, includeDiagonals: boolean): Result[] => {
+    const boardSize = determineBoardSize(board)
 
     const results: Result[] = []
 
@@ -68,7 +73,9 @@ export const getWords =
         results.push({ word: curSequence.map(idx => board[idx]).join(''), sequence: curSequence })
       }
 
-      const nextIndices = getAdjacentTiles(curTileIdx).filter(index => !disabledChars[index])
+      const nextIndices = getAdjacentTiles(boardSize, curTileIdx, includeDiagonals).filter(
+        index => !disabledChars[index]
+      )
 
       if (nextIndices.length === 0) {
         return

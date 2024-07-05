@@ -27,6 +27,12 @@ yargs
           type: 'number',
           requiresArg: true,
         })
+        .option('includeDiagonals', {
+          describe:
+            ' Whether to include diagonal letters when looking up, or only strictly adjacent letters (up, down, left, right).',
+          default: true,
+          type: 'boolean',
+        })
     },
     argv => {
       solve(argv)

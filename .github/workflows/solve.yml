@@ -25,6 +25,11 @@ on:
         description: 'Cut off'
         # Default value if no value is explicitly provided
         default: '8'
+      includeDiagonals:
+        # Friendly description to be shown in the UI
+        description: 'Include diagonal letters'
+        # Default value if no value is explicitly provided
+        default: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -47,4 +52,4 @@ jobs:
     - name: Install packages
       run: yarn install
     - name: Solve puzzle
-      run: yarn solve --board ${{ github.event.inputs.board }} --dict ${{ github.event.inputs.dictionary }} --cutOff ${{ github.event.inputs.cutOff }}
+      run: yarn solve --board ${{ github.event.inputs.board }} --dict ${{ github.event.inputs.dictionary }} --cutOff ${{ github.event.inputs.cutOff }} --includeDiagonals ${{ github.event.inputs.includeDiagonals }}
